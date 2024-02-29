@@ -8,8 +8,8 @@ from selenium.webdriver.common.by import By
 import boto3
 import numpy as np
 
-account = ['710055289@qq.com', 'qq710055289@icloud.com', 'mengrj12138@gmail.com']
-password = 'Rogerm12138!'
+account = ['xxx1', 'xxx2', 'xxx3']
+password = 'xxx'
 
 """ Enter website """
 driver = webdriver.Chrome(executable_path='/Users/Roger/Downloads/chromedriver')
