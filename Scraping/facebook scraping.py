@@ -5,8 +5,11 @@ import time
 import pandas as pd 
 from re import sub
 from selenium.webdriver.common.by import By
-import boto3
 import numpy as np
+import sys
+from upload_to_s3 import upload_to_intake
+
+sys.path.append('/Users/Roger/Vehicle/Scraping')
 
 account = ['xxx1', 'xxx2', 'xxx3']
 password = 'xxx'
@@ -23,16 +26,6 @@ driver.find_element(By.ID, "pass").send_keys(password)
 time.sleep(5)
 url_1 = 'https://www.facebook.com/marketplace/category/vehicles?topLevelVehicleType=car_truck&exact=false'
 driver.get(url_1)
-
-""" Upload and download """
-s3 = boto3.resource("s3")
-def upload(Filename, Key, Bucket = "twttr12138"): #Key is filename, Filename should be dir!@#$@$!
-    s3 = boto3.client("s3")
-    s3.upload_file(
-        Filename = Filename,
-        Bucket = 'twttr12138',
-        Key=Key
-    )
 
 """ Collect data and upload to AWS """
 def collect_data(xpath, date, ele_value = 'kbiprv82'):
@@ -107,10 +100,7 @@ def collect_data(xpath, date, ele_value = 'kbiprv82'):
     dir_ = '/Users/Roger/facebook_vehicles_'+today+'.csv'
     df.to_csv(dir_, index=False)
 
-    upload(
-    Filename = dir_,
-    Key=file_name
-    ) 
+    upload_to_intake(File_path = dir_, S3_path=file_name) 
 
 def collect_detail(date):
     from pyspark.sql import SparkSession
@@ -159,7 +149,7 @@ def get_everything(d, path):
     except:
         raise 'second step is wrong'
 
-    s3.Object("twttr12138", 'facebook_vehicles_'+str(d)+'.csv').delete()
+    s3.Object("intakebucket", 'facebook_vehicles_'+str(d)+'.csv').delete()
 
 """ Run it! """
 d = datetime.date.today()
