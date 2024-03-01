@@ -7,32 +7,37 @@ from re import sub
 from selenium.webdriver.common.by import By
 import numpy as np
 import sys
+sys.path.append('/Users/Roger/Vehicle/Scraping')
 from upload_to_s3 import upload_to_intake
 
-sys.path.append('/Users/Roger/Vehicle/Scraping')
-
+""" Commented out since open source
 account = 'xxx1'
 password = 'xxx'
+"""
 
 """ Enter website """
 driver = webdriver.Chrome(executable_path='/Users/Roger/Downloads/chromedriver')
 
 url = 'http://www.facebook.com'    
 driver.get(url)
+
 """ Enter id and password """
+""" Commented out since open source 
 driver.find_element('xpath', '//*[@id="email"]').click()
 driver.find_element(By.ID, "email").send_keys(account[0])
 driver.find_element('xpath', '//*[@id="pass"]').click()
 driver.find_element(By.ID, "pass").send_keys(password)
 time.sleep(5)
+"""
+
 url_1 = 'https://www.facebook.com/marketplace/category/vehicles?topLevelVehicleType=car_truck&exact=false'
 driver.get(url_1)
 
 """ Collect data and upload to AWS """
 def collect_data(xpath, date):
-    df = pd.DataFrame(columns = ['Collection_date', 'Price', 'Title', 'Location', 'Mileage', 'Path'])
-
     today = date
+
+    df = pd.DataFrame(columns = ['Collection_date', 'Price', 'Title', 'Location', 'Mileage', 'Path'])
 
     l = list()
     lis = driver.find_elements(By.CLASS_NAME, value=xpath)
@@ -146,4 +151,6 @@ def get_everything(d, path):
 
 """ Run it! """
 d = datetime.date.today()
-get_everything(d, "x3ct3a4")
+xpath = input('Enter xpth of today:')
+
+get_everything(d, xpath)
