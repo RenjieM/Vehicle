@@ -36,10 +36,25 @@ driver.get(url_1)
 """ Collect data and upload to AWS """
 def collect_data(xpath, date):
     today = date
-
     df = pd.DataFrame(columns = ['Collection_date', 'Price', 'Title', 'Location', 'Mileage', 'Path'])
 
     l = list()
+    try: 
+        driver.find_elements(By.CLASS_NAME, value=xpath)
+        if driver.find_elements(By.CLASS_NAME, value=xpath) == []:
+            print('Xpath is getting nothing')
+        else:
+            print('Xpath is getting something')
+    except:
+        print('Xpath seems wrong')
+
+    element_address_p1 = '//*[@id="mount_0_0_zT"]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div['
+    element_address_p2 = ']/div/div/span/div/div/a'
+    try:    
+        driver.find_element('xpath', element_address_p1+'1'+element_address_p2).get_attribute('href')
+    except:
+        print('elements are not found')
+
     lis = driver.find_elements(By.CLASS_NAME, value=xpath)
     for i in lis:
         l.append(i.text)
@@ -48,14 +63,14 @@ def collect_data(xpath, date):
     for i in l:
         seperated = i.split("\n")        
         try:
-            path = driver.find_element('xpath', '//*[@id="mount_0_0_aq"]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div[' + str(index) + ']/div/div/span/div/div/a').get_attribute('href')
+            path = driver.find_element('xpath', element_address_p1+str(index)+element_address_p2).get_attribute('href')
         except:
             index += 1
             try:
-                path = driver.find_element('xpath', '//*[@id="mount_0_0_aq"]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div[' + str(index) + ']/div/div/span/div/div/a').get_attribute('href')
+                path = driver.find_element('xpath', element_address_p1+str(index)+element_address_p2).get_attribute('href')
             except:
                 index += 1
-                path = driver.find_element('xpath', '//*[@id="mount_0_0_aq"]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div[' + str(index) + ']/div/div/span/div/div/a').get_attribute('href')
+                path = driver.find_element('xpath', element_address_p1+str(index)+element_address_p2).get_attribute('href')
 
         if seperated[1][0] == '$':
             del seperated[1]
@@ -65,7 +80,7 @@ def collect_data(xpath, date):
 
         if len(seperated) >= 4:
             df = df.append({'Collection_date':today, 
-                            'Price': float(sub(r'[^\d.]', '', seperated[0])), 
+                            'Price': sub(r'[^\d.]', '', seperated[0]), 
                             'Title': seperated[1], 
                             'Location': seperated[2], 
                             'Mileage': seperated[3],
@@ -74,7 +89,7 @@ def collect_data(xpath, date):
         elif len(seperated) == 3:
             seperated.append('null')
             df = df.append({'Collection_date':today, 
-                            'Price': float(sub(r'[^\d.]', '', seperated[0])), 
+                            'Price': sub(r'[^\d.]', '', seperated[0]), 
                             'Title': seperated[1], 
                             'Location': seperated[2], 
                             'Mileage': seperated[3],
@@ -84,7 +99,7 @@ def collect_data(xpath, date):
             seperated.append('null')
             seperated.append('null')
             df = df.append({'Collection_date':today, 
-                            'Price': float(sub(r'[^\d.]', '', seperated[0])), 
+                            'Price': sub(r'[^\d.]', '', seperated[0]), 
                             'Title': seperated[1], 
                             'Location': seperated[2], 
                             'Mileage': seperated[3],
@@ -153,4 +168,4 @@ def get_everything(d, path):
 d = datetime.date.today()
 xpath = input('Enter xpth of today:')
 
-get_everything(d, xpath)
+get_everything(d, 'x3ct3a4')
