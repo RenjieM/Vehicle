@@ -11,14 +11,8 @@ import re
 from ray import method
 import spacy
 import torch
-
-# Download files from S3
-s3 = boto3.resource("s3")
-def download(Key, Filename, Bucket = "twttr12138"):
-    s3 = boto3.client("s3")
-    s3.download_file(
-        Bucket = "twttr12138", Key = Key, Filename = Filename
-    )
+sys.path.append('/Users/Roger/Vehicle/Scraping')
+from upload_to_s3 import upload_to_intake
 
 def daterange(start_date, end_date):
     return int((end_date - start_date).days)

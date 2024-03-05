@@ -167,8 +167,7 @@ def get_everything(d, path, element):
         raise 'second step is wrong'
 
 """ Run it! """
-d = datetime.date.today()
+today = datetime.date.today()
 xpath = input('Enter xpth of today:')
 element = input('Enter element:')
-
-get_everything(d, xpath, element)
+get_everything(today, xpath, element)
