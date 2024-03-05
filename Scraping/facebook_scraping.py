@@ -34,7 +34,7 @@ url_1 = 'https://www.facebook.com/marketplace/category/vehicles?topLevelVehicleT
 driver.get(url_1)
 
 """ Collect data and upload to AWS """
-def collect_data(xpath, date):
+def collect_data(xpath, date, element):
     today = date
     df = pd.DataFrame(columns = ['Collection_date', 'Price', 'Title', 'Location', 'Mileage', 'Path'])
 
@@ -48,7 +48,7 @@ def collect_data(xpath, date):
     except:
         print('Xpath seems wrong')
 
-    element_address_p1 = '//*[@id="mount_0_0_zT"]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div['
+    element_address_p1 = '//*[@id="'+element+'"]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div/div[5]/div/div[2]/div['
     element_address_p2 = ']/div/div/span/div/div/a'
     try:    
         driver.find_element('xpath', element_address_p1+'1'+element_address_p2).get_attribute('href')
@@ -117,6 +117,7 @@ def collect_data(xpath, date):
 
     upload_to_intake(File_path = dir_, S3_path='Intake_from_scraping_step1/' + file_name) 
 
+""" Get description from each individual listing """
 def collect_detail(date, class_value='xod5an3'):
     from pyspark.sql import SparkSession
     spark = SparkSession.builder.appName('fb').getOrCreate()
@@ -137,7 +138,7 @@ def collect_detail(date, class_value='xod5an3'):
             for j in text:
                 l.append(j.text)
             l = ' '.join(l)
-            des.append(l.strip())
+            des.append(l)
             print(f'{round((i+1)*100 / len(path), 1)}% is done')
         except:
             des.append('null')
@@ -152,10 +153,11 @@ def collect_detail(date, class_value='xod5an3'):
         '/Users/Roger/facebook_vehicles_'+date+'_moreinfo.csv',
         'intake_from_scraping/facebook_vehicles_'+date+'_moreinfo.csv'
     )
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-def get_everything(d, path):
+
+""" Combine two steps together """                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
+def get_everything(d, path, element):
     try:
-        collect_data(date=str(d), xpath = path)
+        collect_data(date=str(d), xpath=path, element=element)
     except:
         raise 'first step is wrong'
 
@@ -167,5 +169,6 @@ def get_everything(d, path):
 """ Run it! """
 d = datetime.date.today()
 xpath = input('Enter xpth of today:')
+element = input('Enter element:')
 
-get_everything(d, 'x3ct3a4')
+get_everything(d, xpath, element)

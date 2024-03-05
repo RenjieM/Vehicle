@@ -13,3 +13,9 @@ def upload_to_intake(File_path, S3_path, Bucket = "intakebucket"): #Key is filen
         Bucket = 'intakebucket',
         Key=S3_path
     )
+# Download files from S3
+def download(Key, Filename, Bucket = "intakebucket"):
+    s3 = boto3.client("s3")
+    s3.download_file(
+        Bucket = "intakebucket", Key = Key, Filename = Filename
+    )
